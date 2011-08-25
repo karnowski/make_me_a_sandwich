@@ -1,0 +1,11 @@
+# Rotate the Rails app logs.
+/var/www/apps/[application]/shared/log/*.log {
+  notifempty
+  daily
+  missingok
+  rotate 30
+  sharedscripts
+  postrotate
+    touch /var/www/apps/[application]/current/tmp/restart.txt
+  endscript
+}
