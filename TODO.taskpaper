@@ -1,3 +1,6 @@
+General:
 - Per abedra: have this thing scp & ssh itself onto the target server?
 - how to have this "generated" into an app?
 - monit?  god?  some sort of health-checking monitoring system?
+- cleanup the use of the "deploy" user in the individual READMEs
+- how to tie in the vmware stuff?  just remove it?
