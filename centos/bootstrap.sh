@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# DESIGN PRINCIPLES of bootstrap.sh:
-# * each component should be isolated in its own install function
-# * each install function should be idempotent (safely called again and again)
-# * this idempotency is to aid debugging and installation and is NOT to be used as a system updgrade mechanism
-# * but, system updates should be backported to this script
+# TODO: include the Design Principles here
 
 PROJECT_NAME=application
 

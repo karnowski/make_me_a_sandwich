@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# DESIGN PRINCIPLES of bootstrap.sh:
-# * each component should be isolated in its own install function
-# * each install function should be idempotent (safely called again and again)
-# * this idempotency is to aid debugging and installation and is NOT to be used as a system updgrade mechanism
-# * but, system updates should be backported to this script
+# TODO: include the Design Principles here
 
 PROJECT_NAME=application
 
@@ -67,18 +63,18 @@ function install_ruby {
   fi
 }
 
-# function install_ree {
-#   # TODO: needs to be idempotent-ized
-#   wget http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2011.03_i386_ubuntu10.04.deb
-#   dpkg -i ruby-enterprise_1.8.7-2011.03_i386_ubuntu10.04.deb 
-#   passenger-install-apache2-module 
-# }
-
 function install_essential_gems {
   gem update --system
   gem install rake --no-rdoc --no-ri --version 0.9.2
   gem install bundler --no-rdoc --no-ri --version 1.0.18
 }
+
+# function install_ree_and_passenger {
+#   # TODO: needs to be idempotent-ized
+#   wget http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2011.03_i386_ubuntu10.04.deb
+#   dpkg -i ruby-enterprise_1.8.7-2011.03_i386_ubuntu10.04.deb 
+#   passenger-install-apache2-module 
+# }
 
 # function install_postgresql {
 #   if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
@@ -155,18 +151,19 @@ function install_apache2 {
 # function start_apache {
 #   service httpd start
 # }
-# 
-# function install_passenger {
-#   if [ -f /usr/local/lib/ruby/gems/1.9.1/gems/passenger-3.0.7/ext/apache2/mod_passenger.so ]; then
-#     skipping "Already installed: passenger"
-#   else
-#     installing "passenger"
-#     yum -y install curl-devel httpd-devel apr-devel apr-util-devel
-#     gem install --no-rdoc --no-ri passenger --version 3.0.7
-#     passenger-install-apache2-module -a
-#   fi
-# }
-# 
+
+# Note this is tied to the Ruby 1.9.2 installation above (nevermind the 1.9.1 below, it's a red-herring).
+# If you're using REE, it will install passenger itself.
+function install_passenger {
+  if [ -f /usr/local/lib/ruby/gems/1.9.1/gems/passenger-3.0.8/ext/apache2/mod_passenger.so ]; then
+    skipping "Already installed: passenger"
+  else
+    installing "passenger"
+    gem install --no-rdoc --no-ri passenger --version 3.0.8
+    passenger-install-apache2-module -a
+  fi
+}
+
 # function install_logrotate {
 #   if [ -f /etc/logrotate.d/${PROJECT_NAME} ]; then
 #     skipping "Already installed: logrotate configuration"
@@ -219,11 +216,11 @@ function bootstrap_webapp {
   # install_mongodb
   
   install_ruby
-  # install_ree
+  # install_ree_and_passenger
   install_essential_gems
   
   install_apache2
-  # install_passenger
+  install_passenger
   # install_apache_config
   # install_self_signed_cert
   # start_apache
