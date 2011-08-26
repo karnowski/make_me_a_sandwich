@@ -130,27 +130,33 @@ function install_apache2 {
   aptitude install -y apache2 libcurl4-openssl-dev libssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
 }
 
-# function install_apache_config {
-#   conf="${PROJECT_NAME}.conf"
-#   
-#   if [ -f "/etc/httpd/conf.d/${conf}" ]; then
-#     skipping "${conf} already installed."
-#   else
-#     installing "${conf}" 
-#     cp ${conf} /etc/httpd/conf.d
-#     cp valid_apache_users /etc/httpd/valid_users
-#   fi
+# THINKING: 
+# * there are basically two approaches here, either bootstrap.sh installs a config, or
+# * boostrap.sh just points to a config that lives in your (presumably) Rails app;
+# however... the problem there is that even if you want it live in your Rails app, 
+# bootstrap.sh (or some mechanism of it) needs to generate it, since it's based on
+# the version of Ruby/Passenger you install (or not) and the certs you use/generate...
+# starting to think we need to NOT check the config into the app but let bootstrap.sh 
+# deal with it.
+# MORE THINKING:
+# Yes, I'm pretty convinced that the *.conf file is an artifact of bootstrap.sh, and should
+# live in the #{APP}/bootstrap directory, not in any other config directory
+function install_apache_config {
+  if [ -f "/etc/apache2/sites-enabled/${PROJECT_NAME}" ]; then
+    skipping "Apache config already installed."
+  else
+    installing "Apache conf"
+    cp apache-site.conf /etc/apache2/sites-available/${PROJECT_NAME}
+    a2enmod ssl
+    a2enmod rewrite
+    a2dissite default
+    a2ensite $PROJECT_NAME
+  fi
+}
 
-    # -- from abedra:
-    # ln -sf /var/www/apps/mydischargepro/current/config/apache2/mydischargepro.conf
-    # a2dissite default
-    # a2ensite mydischargepro.conf
-    # /etc/init.d/apache2 restart
-# }
-# 
-# function start_apache {
-#   service httpd start
-# }
+function restart_apache {
+  /etc/init.d/apache2 restart
+}
 
 # Note this is tied to the Ruby 1.9.2 installation above (nevermind the 1.9.1 below, it's a red-herring).
 # If you're using REE, it will install passenger itself.
@@ -221,9 +227,9 @@ function bootstrap_webapp {
   
   install_apache2
   install_passenger
-  # install_apache_config
+  install_apache_config
   # install_self_signed_cert
-  # start_apache
+  restart_apache
 
   # install_logrotate
 
