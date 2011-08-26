@@ -26,11 +26,21 @@ function installing {
 
 function ensure_fundamentals {
   aptitude update
+  aptitude upgrade -y
   aptitude install -y vim openssh-client wget python-software-properties
 }
 
+function setup_firewall {
+  aptitude install -y ufw
+  ufw default deny
+  ufw allow 22
+  ufw allow 80
+  ufw allow 443
+  ufw --force enable
+}
+
 function install_build_from_source_prereqs {
-  aptitude install -y gcc libssl-dev libreadline6-dev zlib1g-dev make libxml2-dev libxslt-dev 
+  aptitude install -y build-essential libssl-dev libreadline6-dev zlib1g-dev libxml2-dev libxslt-dev
 }
 
 function install_git {
@@ -57,12 +67,19 @@ function install_ruby {
   fi
 }
 
-# function install_essential_gems {
-#   gem update --system
-#   gem install rake --no-rdoc --no-ri --version 0.8.7
-#   gem install bundler --no-rdoc --no-ri --version 1.0.12
+# function install_ree {
+#   # TODO: needs to be idempotent-ized
+#   wget http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2011.03_i386_ubuntu10.04.deb
+#   dpkg -i ruby-enterprise_1.8.7-2011.03_i386_ubuntu10.04.deb 
+#   passenger-install-apache2-module 
 # }
-# 
+
+function install_essential_gems {
+  gem update --system
+  gem install rake --no-rdoc --no-ri --version 0.9.2
+  gem install bundler --no-rdoc --no-ri --version 1.0.18
+}
+
 # function install_postgresql {
 #   if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
 #     skipping "Already installed: postgresql"
@@ -78,6 +95,13 @@ function install_ruby {
 #     service postgresql start
 #   fi
 # }
+
+function install_mysql {
+  export DEBIAN_FRONTEND=noninteractive
+  aptitude install -y mysql-server libmysqlclient16-dev
+  unset DEBIAN_FRONTEND
+}
+
 # 
 # function install_mongodb {
 #   if [ -f '/etc/yum.repos.d/10gen.repo' ]; then
@@ -105,13 +129,11 @@ function install_ruby {
 #       -out /etc/ssl/self_signed.pem
 #   fi
 # }
-# 
-# function install_apache2 {
-#   yum -y install httpd mod_ssl
-#   chkconfig httpd on
-#   rm -f /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/welcome.conf /etc/http/conf.d/proxy_ajp.conf
-# }
-# 
+
+function install_apache2 {
+  aptitude install -y apache2 libcurl4-openssl-dev libssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
+}
+
 # function install_apache_config {
 #   conf="${PROJECT_NAME}.conf"
 #   
@@ -122,6 +144,12 @@ function install_ruby {
 #     cp ${conf} /etc/httpd/conf.d
 #     cp valid_apache_users /etc/httpd/valid_users
 #   fi
+
+    # -- from abedra:
+    # ln -sf /var/www/apps/mydischargepro/current/config/apache2/mydischargepro.conf
+    # a2dissite default
+    # a2ensite mydischargepro.conf
+    # /etc/init.d/apache2 restart
 # }
 # 
 # function start_apache {
@@ -182,14 +210,16 @@ function install_ruby {
 
 function bootstrap_webapp {
   ensure_fundamentals
+  setup_firewall
   install_build_from_source_prereqs
   install_git
   # install_postgresql
-  # install_mysql
+  install_mysql
   # install_mongodb
   install_ruby
-  # install_essential_gems
-  # install_apache2
+  # install_ree
+  install_essential_gems
+  install_apache2
   # install_passenger
   # install_logrotate
   # install_apache_config
