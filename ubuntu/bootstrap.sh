@@ -213,20 +213,24 @@ function bootstrap_webapp {
   setup_firewall
   install_build_from_source_prereqs
   install_git
+  
   # install_postgresql
   install_mysql
   # install_mongodb
+  
   install_ruby
   # install_ree
   install_essential_gems
+  
   install_apache2
   # install_passenger
-  # install_logrotate
   # install_apache_config
-  # install_nodejs  
-  # 
   # install_self_signed_cert
   # start_apache
+
+  # install_logrotate
+
+  # install_nodejs
 
   echo "Work complete!"
 }

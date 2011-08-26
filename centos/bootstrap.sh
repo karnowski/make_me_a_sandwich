@@ -178,18 +178,22 @@ function bootstrap_webapp {
   ensure_fundamentals
   install_build_from_source_prereqs
   install_git
+
   install_postgresql
   install_mongodb
+
   install_ruby
   install_essential_gems
+
   install_apache2
   install_passenger
-  install_logrotate
   install_apache_config
-  install_nodejs  
-
   install_self_signed_cert
   start_apache
+
+  install_nodejs
+
+  install_logrotate
 
   echo "Work complete!"
 }
