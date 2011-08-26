@@ -25,12 +25,13 @@ function installing {
 }
 
 function ensure_fundamentals {
-  aptitude install -y vim openssh-client wget
+  aptitude update
+  aptitude install -y vim openssh-client wget python-software-properties
 }
 
-# function install_build_from_source_prereqs {
-#   yum -y install gcc gcc-c++ zlib-devel readline-devel openssl-devel make autoconf libxml2-devel libxslt-devel
-# }
+function install_build_from_source_prereqs {
+  aptitude install -y gcc libssl-dev libreadline6-dev zlib1g-dev make libxml2-dev libxslt-dev 
+}
 
 function install_git {
   aptitude install -y git-core
@@ -41,13 +42,18 @@ function install_ruby {
     skipping "Already installed: ruby"
   else
     installing "ruby"
-    wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
-    tar zxvf ruby-1.9.2-p290.tar.gz
+    pushd /tmp
+    
+    if [ ! -d ruby-1.9.2-p290 ]; then
+      wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
+      tar zxf ruby-1.9.2-p290.tar.gz
+    fi
+    
     cd ruby-1.9.2-p290
     ./configure
     make
     make install
-    cd -
+    popd
   fi
 }
 
@@ -176,7 +182,7 @@ function install_ruby {
 
 function bootstrap_webapp {
   ensure_fundamentals
-  # install_build_from_source_prereqs
+  install_build_from_source_prereqs
   install_git
   # install_postgresql
   # install_mysql
