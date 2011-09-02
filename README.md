@@ -14,10 +14,10 @@ Easily generate boilerplate scripts for every provisioning event.  The old provi
 
 * A simple-to-run, idempotent script for Ubuntu installation and another for CentOS.
 * Generate boilerplate scripts that are *designed* to be easily updated by the developer.
-* Generate boilerplate scripts that are *designed* to be thrown away and regenerated for a provisioning event.
+* Generate boilerplate scripts that are *designed* to be thrown away and regenerated for each provisioning event.
 * Don't try to abstract away from Ubuntu & CentOS like Chef & Puppet do.
-* No requirement of Ruby, so no Capistrano.
-* Only require Bash.
+* No requirement of Ruby, so no Capistrano. [can I stick to this?]
+* Only require Bash. [in the generated boilerplate scripts, but what about the file generation?]
 
 ## Other Goals, not sure
 
