@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# TODO: include the Design Principles here
+# TODO: generated boilerplate should include the Design Principles here
 
 PROJECT_NAME=application
 
@@ -90,21 +90,17 @@ function install_essential_gems {
 #   passenger-install-apache2-module 
 # }
 
-# function install_postgresql {
-#   if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
-#     skipping "Already installed: postgresql"
-#   else
-#     installing "postgres"
-#     yum -y install postgresql-server postgresql-devel
-#     service postgresql initdb
-# 
-#     # Allows postgres user to connect.
-#     sed -ie 's/ident$/trust/' /var/lib/pgsql/data/pg_hba.conf
-# 
-#     chkconfig postgresql on
-#     service postgresql start
-#   fi
-# }
+function install_postgresql {
+  if [ -f /etc/postgresql/8.4/main/pg_hba.conf ]; then
+    skipping "Already installed: postgresql"
+  else
+    installing "postgres"
+    aptitude install -y postgresql-8.4 postgresql-server-dev-8.4
+
+    # Allows postgres user to connect.
+    sed -ie 's/ident$/trust/' /etc/postgresql/8.4/main/pg_hba.conf
+  fi
+}
 
 function install_mysql {
   checking "MySQL"
@@ -203,20 +199,6 @@ function install_passenger {
 #     ln -s /usr/local/bin/node /usr/bin/node
 #   fi
 # }
-# 
-# function create_user {
-#   local username=$1
-#   local shell=$2
-#     
-#   if id $username > /dev/null; then
-#     skipping "user already exists: $username";
-#   else
-#     installing "user: $username with shell: $shell"
-#     useradd --create-home --shell $shell $username;
-#     passwd -d $username;
-#     chage -E -1 -I -1 -M -1 -m -1 -W -1 $username;
-#   fi
-# }
 
 function bootstrap_webapp {
   update_and_upgrade
@@ -225,7 +207,7 @@ function bootstrap_webapp {
   install_build_from_source_prereqs
   install_git
   
-  # install_postgresql
+  install_postgresql
   install_mysql
   # install_mongodb
   
