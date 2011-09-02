@@ -26,3 +26,16 @@ A collection of recipes for creating servers suitable for Rails, Node, & Clojure
 ## Thoughts
 
 I'm thinking I might have to use a text-generator like ERB to really make this work.  That would obviously require Ruby.  Hmmm...
+
+### Thinking about Apache
+
+* there are basically two approaches here, either bootstrap.sh installs a config, or
+* boostrap.sh just points to a config that lives in your (presumably) Rails app;
+however... the problem there is that even if you want it live in your Rails app, 
+bootstrap.sh (or some mechanism of it) needs to generate it, since it's based on
+the version of Ruby/Passenger you install (or not) and the certs you use/generate...
+starting to think we need to NOT check the config into the app but let bootstrap.sh 
+deal with it.
+MORE THINKING:
+Yes, I'm pretty convinced that the *.conf file is an artifact of bootstrap.sh, and should
+live in the #{APP}/bootstrap directory, not in any other config directory

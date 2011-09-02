@@ -20,13 +20,20 @@ function installing {
   printf "\e[1;33m[installing]\e[00m $msg\n"
 }
 
+function checking {
+  local msg=$1
+  printf "\e[1;33m[checking]\e[00m $msg\n"
+}
+
 function ensure_fundamentals {
+  checking "fundamental packages"
   aptitude update
   aptitude upgrade -y
   aptitude install -y vim openssh-client wget python-software-properties
 }
 
 function setup_firewall {
+  checking "firewall"
   aptitude install -y ufw
   ufw default deny
   ufw allow 22
@@ -36,10 +43,12 @@ function setup_firewall {
 }
 
 function install_build_from_source_prereqs {
+  checking "packages for software compilation"
   aptitude install -y build-essential libssl-dev libreadline6-dev zlib1g-dev libxml2-dev libxslt-dev
 }
 
 function install_git {
+  checking "git"
   aptitude install -y git-core
 }
 
@@ -64,6 +73,7 @@ function install_ruby {
 }
 
 function install_essential_gems {
+  checking "essential Ruby gems"
   gem update --system
   gem install rake --no-rdoc --no-ri --version 0.9.2
   gem install bundler --no-rdoc --no-ri --version 1.0.18
@@ -93,6 +103,7 @@ function install_essential_gems {
 # }
 
 function install_mysql {
+  checking "MySQL"
   export DEBIAN_FRONTEND=noninteractive
   aptitude install -y mysql-server libmysqlclient16-dev
   unset DEBIAN_FRONTEND
@@ -110,37 +121,27 @@ function install_mysql {
 #     service mongod start
 #   fi
 # }
-# 
-# function install_self_signed_cert {
-#   if [ -f '/etc/ssl/self_signed.pem' ]; then
-#     skipping "Already installed: self-signed cert"
-#   else
-#     installing "self-signed cert"
-#     mkdir -p /etc/ssl    
-#     openssl req \
-#       -x509 -nodes -days 3650 \
-#       -subj "/C=US/ST=North Carolina/L=Durham/CN=${PROJECT_NAME}" \
-#       -newkey rsa:1024 \
-#       -keyout /etc/ssl/self_signed.pem \
-#       -out /etc/ssl/self_signed.pem
-#   fi
-# }
+
+function install_self_signed_cert {
+  if [ -f '/etc/ssl/certs/apache2.pem' ]; then
+    skipping "Already installed: self-signed cert"
+  else
+    installing "self-signed cert"
+    mkdir -p /etc/ssl/certs
+    openssl req \
+      -x509 -nodes -days 3650 \
+      -subj "/C=US/ST=North Carolina/L=Durham/CN=${PROJECT_NAME}" \
+      -newkey rsa:1024 \
+      -keyout /etc/ssl/certs/apache2.pem \
+      -out /etc/ssl/certs/apache2.pem
+  fi
+}
 
 function install_apache2 {
+  checking "Apache2"
   aptitude install -y apache2 libcurl4-openssl-dev libssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
 }
 
-# THINKING: 
-# * there are basically two approaches here, either bootstrap.sh installs a config, or
-# * boostrap.sh just points to a config that lives in your (presumably) Rails app;
-# however... the problem there is that even if you want it live in your Rails app, 
-# bootstrap.sh (or some mechanism of it) needs to generate it, since it's based on
-# the version of Ruby/Passenger you install (or not) and the certs you use/generate...
-# starting to think we need to NOT check the config into the app but let bootstrap.sh 
-# deal with it.
-# MORE THINKING:
-# Yes, I'm pretty convinced that the *.conf file is an artifact of bootstrap.sh, and should
-# live in the #{APP}/bootstrap directory, not in any other config directory
 function install_apache_config {
   if [ -f "/etc/apache2/sites-enabled/${PROJECT_NAME}" ]; then
     skipping "Apache config already installed."
@@ -228,7 +229,7 @@ function bootstrap_webapp {
   install_apache2
   install_passenger
   install_apache_config
-  # install_self_signed_cert
+  install_self_signed_cert
   restart_apache
 
   # install_logrotate
