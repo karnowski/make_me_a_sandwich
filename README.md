@@ -10,6 +10,12 @@ Instead of having a hard-coded and difficult to change provisioning recipe with 
 
 Easily generate boilerplate scripts for every provisioning event.  The old provision script is mostly for historical purposes anyway.  Don't try to run it in a year.  It's not going to work.
 
+....
+
+* servers are cheap to provision now giving cloud services
+* instead of maintaining servers for long periods of time, we should periodically just provision new servers
+* it's better to provision a new server from scratch than make lots of little config changes; then you can just hot-swap from the old to the new with a DNS change
+
 ## Goals
 
 * A simple-to-run, idempotent script for Ubuntu installation and another for CentOS.

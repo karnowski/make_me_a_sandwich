@@ -109,18 +109,16 @@ function install_mysql {
   unset DEBIAN_FRONTEND
 }
 
-# 
-# function install_mongodb {
-#   if [ -f '/etc/yum.repos.d/10gen.repo' ]; then
-#     skipping "Already installed: mongodb"
-#   else
-#     installing "mongodb"
-#     cp 10gen.yum.repo /etc/yum.repos.d/10gen.repo
-#     yum -y --enablerepo=10gen install mongo-10gen-server
-#     chkconfig mongod on
-#     service mongod start
-#   fi
-# }
+function install_mongodb {
+  if [ -f '/etc/apt/sources.list.d/10gen' ]; then
+    skipping "Already installed: mongodb"
+  else
+    installing "mongodb"
+    apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+    cp 10gen.sources.list /etc/apt/sources.list.d/10gen
+    aptitude install -y mongodb-10gen
+  fi
+}
 
 function install_self_signed_cert {
   if [ -f '/etc/ssl/certs/apache2.pem' ]; then
@@ -209,7 +207,7 @@ function bootstrap_webapp {
   
   install_postgresql
   install_mysql
-  # install_mongodb
+  install_mongodb
   
   install_ruby
   # install_ree_and_passenger
