@@ -171,16 +171,14 @@ function install_passenger {
   fi
 }
 
-# function install_logrotate {
-#   if [ -f /etc/logrotate.d/${PROJECT_NAME} ]; then
-#     skipping "Already installed: logrotate configuration"
-#   else
-#     installing "logrotate configuration"
-# 
-#     # install our config that rotates logs from Rails, Apache, mail, etc.
-#     cp ${PROJECT_NAME}.logrotate /etc/logrotate.d/${PROJECT_NAME}
-#   fi
-# }
+function install_logrotate {
+  if [ -f /etc/logrotate.d/${PROJECT_NAME} ]; then
+    skipping "Already installed: logrotate configuration"
+  else
+    installing "logrotate configuration"
+    cp ${PROJECT_NAME}.logrotate /etc/logrotate.d/${PROJECT_NAME}
+  fi
+}
 
 function install_nodejs {
   if [ -x /usr/bin/node ]; then
@@ -224,7 +222,7 @@ function bootstrap_webapp {
   install_self_signed_cert
   restart_apache
 
-  # install_logrotate
+  install_logrotate
 
   install_nodejs
 
