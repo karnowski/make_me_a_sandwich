@@ -65,7 +65,7 @@ function install_ruby {
     
     if [ ! -d ruby-1.9.2-p290 ]; then
       wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
-      tar zxf ruby-1.9.2-p290.tar.gz
+      tar --no-same-owner -zxf ruby-1.9.2-p290.tar.gz
     fi
     
     cd ruby-1.9.2-p290
@@ -181,22 +181,27 @@ function install_passenger {
 #     cp ${PROJECT_NAME}.logrotate /etc/logrotate.d/${PROJECT_NAME}
 #   fi
 # }
-# 
-# function install_nodejs {
-#   if [ -x /usr/bin/node ]; then
-#     skipping "Already installed: nodejs"
-#   else
-#     installing "nodejs"
-#     wget http://nodejs.org/dist/node-v0.4.10.tar.gz
-#     tar zxvf node-v0.4.10.tar.gz
-#     cd node-v0.4.10
-#     ./configure
-#     make
-#     make install
-#     cd -
-#     ln -s /usr/local/bin/node /usr/bin/node
-#   fi
-# }
+
+function install_nodejs {
+  if [ -x /usr/bin/node ]; then
+    skipping "Already installed: nodejs"
+  else
+    installing "nodejs"
+    pushd /tmp
+    
+    if [ ! -d node-v0.5.5 ]; then
+      wget http://nodejs.org/dist/v0.5.5/node-v0.5.5.tar.gz
+      tar --no-same-owner -zxvf node-v0.5.5.tar.gz
+    fi
+    
+    cd node-v0.5.5
+    ./configure
+    make
+    make install
+    popd
+    ln -s /usr/local/bin/node /usr/bin/node
+  fi
+}
 
 function bootstrap_webapp {
   update_and_upgrade
@@ -221,7 +226,7 @@ function bootstrap_webapp {
 
   # install_logrotate
 
-  # install_nodejs
+  install_nodejs
 
   echo "Work complete!"
 }
