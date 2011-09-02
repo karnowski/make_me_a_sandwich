@@ -4,3 +4,6 @@ General:
 - monit?  god?  some sort of health-checking monitoring system?
 - cleanup the use of the "deploy" user in the individual READMEs
 - how to tie in the vmware stuff?  just remove it?
+
+Centos:
+- add the "checking" UI mileposts that I added to ubuntu

@@ -2,7 +2,7 @@
 
 A collection of recipes for creating servers suitable for Rails, Node, & Clojure apps.
 
-## Movitation
+## Motivation
 
 Operating systems and the software packages they provide are always changing, being updated, being tweaked.  Your application is always changing, growing, expanding.  Provisioning a server to host your software is a "rubber-meets-road" experience that bridges these two moving targets together.  In other words, a provisioning event this month could be very different than a provisioning event next month.
 

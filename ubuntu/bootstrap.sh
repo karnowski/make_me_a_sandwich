@@ -25,10 +25,14 @@ function checking {
   printf "\e[1;33m[checking]\e[00m $msg\n"
 }
 
-function ensure_fundamentals {
-  checking "fundamental packages"
+function update_and_upgrade {
+  checking "update and upgrade OS"
   aptitude update
   aptitude upgrade -y
+}
+
+function ensure_fundamentals {
+  checking "fundamental packages"
   aptitude install -y vim openssh-client wget python-software-properties
 }
 
@@ -156,12 +160,14 @@ function install_apache_config {
 }
 
 function restart_apache {
+  checking "Restarting Apache"
   /etc/init.d/apache2 restart
 }
 
-# Note this is tied to the Ruby 1.9.2 installation above (nevermind the 1.9.1 below, it's a red-herring).
+# Note this is tied to the Ruby 1.9.2 installation above
 # If you're using REE, it will install passenger itself.
 function install_passenger {
+  # (nevermind the 1.9.1 below, it's a red-herring; this is really 1.9.2)  
   if [ -f /usr/local/lib/ruby/gems/1.9.1/gems/passenger-3.0.8/ext/apache2/mod_passenger.so ]; then
     skipping "Already installed: passenger"
   else
@@ -213,6 +219,7 @@ function install_passenger {
 # }
 
 function bootstrap_webapp {
+  update_and_upgrade
   ensure_fundamentals
   setup_firewall
   install_build_from_source_prereqs
