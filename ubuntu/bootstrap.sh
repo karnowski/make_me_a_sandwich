@@ -166,7 +166,7 @@ function install_passenger {
     skipping "Already installed: passenger"
   else
     installing "passenger"
-    gem install --no-rdoc --no-ri passenger --version 3.0.8
+    gem install --no-rdoc --no-ri passenger --version 3.0.9
     passenger-install-apache2-module -a
   fi
 }
